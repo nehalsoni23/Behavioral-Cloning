@@ -54,35 +54,62 @@ The model.py file contains the code for training and saving the convolution neur
 
 #### 1. An appropriate model architecture has been employed
 
-My model consists of a convolution neural network with 3x3 filter sizes and depths between 32 and 128 (model.py lines 18-24) 
+Before implementing CNN for my model I have pre-processed data by cropping and normalizing images. As the upper part contains trees and hills which adds no value to training the car, 50px on top is cropped and 20px on bottom to remove hood of the car is cropped. This makes the input to convolutional layer 90x320x3.
 
-The model includes RELU layers to introduce nonlinearity (code line 20), and the data is normalized in the model using a Keras lambda layer (code line 18). 
+I have also normalized the data so that the value of a pixel will be in between -0.5 to +0.5.
+
+My model consists of a convolution neural network with following layers:
+
+| Layer         										 |
+|:------------------------------------------------------:|
+| Input 90x320x3 - 3 channel image  					 |
+| Convolution 5x5, 2x2 stride, Depth 24, RELU activation | 
+| Convolution 5x5, 2x2 stride, Depth 36, RELU activation |
+| Convolution 5x5, 2x2 stride, Depth 48, RELU activation |
+| Convolution 3x3, 2x2 stride, Depth 64, RELU activation |
+| Convolution 3x3, 2x2 stride, Depth 64, RELU activation |
+| Flatter												 |
+| Fully connected 	Output = 100			         	 |
+| Fully connected	Output = 50	        				 |
+| Fully connected	Output = 1	        				 |
+
+Stride in Tensorflow = subsample in keras
 
 #### 2. Attempts to reduce overfitting in the model
 
-The model contains dropout layers in order to reduce overfitting (model.py lines 21). 
+I have shuffled the training data to reduce overfitting before starting batch processing and also at the time of yielding the output from generator.
 
-The model was trained and validated on different data sets to ensure that the model was not overfitting (code line 10-16). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
+The model was trained and validated on different data sets to ensure that the model was not overfitting. The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
 
 #### 3. Model parameter tuning
 
-The model used an adam optimizer, so the learning rate was not tuned manually (model.py line 25).
+The model used an adam optimizer, so the learning rate was not tuned manually.
+
+There is one steering angle correction parameter for left and right side images which is tuned as 2.0.
 
 #### 4. Appropriate training data
 
-Training data was chosen to keep the vehicle driving on the road. I used a combination of center lane driving, recovering from the left and right sides of the road ... 
+Training data was chosen to keep the vehicle driving on the road. I used a combination of centre lane driving, recovering from the left and right sides of the road. The model will treat all three kind of images as if they are coming from centre camera.
 
-For details about how I created the training data, see the next section. 
+So suppose the car sees one image coming from centre camera similar to one we get with left camera then it will add 2.0 in steering angle to move it on right side a bit and it will subtract 2.0 when it will see image similar to one coming from right camera.
+
+This way we will be able to keep the car on centre of the road when it will drift to right or left.
+
+Another way to keep the car in centre is to collect data in a way that it is recovering from side of the road to centre. This can be achieved nicely by turning the recorder ON only when it is recovering to centre from sides and not while car is drifting away from centre. This way it will learn not learn to drift away from road and will be on track properly.
+
+For details about how I created the training data, see the next section.
 
 ### Model Architecture and Training Strategy
 
 #### 1. Solution Design Approach
 
-The overall strategy for deriving a model architecture was to ...
+The overall strategy for deriving a model architecture was to train the car to run smoothly in autonomous mode.
 
-My first step was to use a convolution neural network model similar to the ... I thought this model might be appropriate because ...
+My first step was to use a convolution neural network model. I used nvidia model of deep learning because it is very powerful and it contains 9 layers as shown in table 1.
 
-In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. I found that my first model had a low mean squared error on the training set but a high mean squared error on the validation set. This implied that the model was overfitting. 
+I used 2 Epochs initially to see how well it works. But in second Epochs my validation loss got increased instead of reducing. Then, I kept only 1 Epoch and it worked well.
+
+In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. I found that my first model had a low mean squared error on the training set but a high mean squared error on the validation set. This implied that the model was overfitting.
 
 To combat the overfitting, I modified the model so that ...
 
