@@ -68,7 +68,6 @@ My model consists of a convolution neural network with following layers:
 | Convolution 5x5, 2x2 stride, Depth 36, RELU activation 	|
 | Convolution 5x5, 2x2 stride, Depth 48, RELU activation 	|
 | Convolution 3x3, 2x2 stride, Depth 64, RELU activation 	|
-| Convolution 3x3, 2x2 stride, Depth 64, RELU activation 	|
 | Flatter												 	|
 | Fully connected 	Output = 100			         	 	|
 | Fully connected	Output = 50	        				 	|
@@ -152,5 +151,5 @@ I finally randomly shuffled the data set and put 20% of the data into a validati
 
 I used this training data for training the model. The validation set helped determine if the model was over or under fitting. I used an adam optimizer so that manually training the learning rate wasn't necessary. I used 1 epoch to train the model at last as using two epochs validation loss didn't reduced. Although my car was driving great just like it is driving with single epoch in even with two epochs scenario also.
 
-Here is my training and validation logs from python notebook:
+#### Here is my training and validation logs from python notebook:
 ![alt text][image7]
