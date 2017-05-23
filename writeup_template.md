@@ -1,4 +1,4 @@
-#**Behavioral Cloning** 
+# **Behavioral Cloning** 
 
 ## Writeup Template
 
@@ -18,13 +18,13 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./examples/placeholder.png "Model Visualization"
-[image2]: ./examples/placeholder.png "Grayscaling"
-[image3]: ./examples/placeholder_small.png "Recovery Image"
-[image4]: ./examples/placeholder_small.png "Recovery Image"
-[image5]: ./examples/placeholder_small.png "Recovery Image"
-[image6]: ./examples/placeholder_small.png "Normal Image"
-[image7]: ./examples/placeholder_small.png "Flipped Image"
+[image1]: examples/model.JPG "Model Visualization (NVIDIA model)"
+[image2]: examples/03-left-camera.jpg "Left Camera Image"
+[image3]: examples/04-center-camera.jpg "Centre Camera Image"
+[image4]: examples/05-right-camera.jpg "Right Camera Image"
+[image5]: examples/01-nonflip.jpg "Non Flipped Image"
+[image6]: examples/02-flipped.jpg "Flipped Image"
+[image7]: examples/06-training.JPG "Keras Training Result"
 
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
@@ -35,10 +35,11 @@ The goals / steps of this project are the following:
 #### 1. Submission includes all required files and can be used to run the simulator in autonomous mode
 
 My project includes the following files:
-* model.py containing the script to create and train the model
+* model.ipynb containing the script to create and train the model
 * drive.py for driving the car in autonomous mode
 * model.h5 containing a trained convolution neural network 
 * writeup_report.md or writeup_report.pdf summarizing the results
+* run1.mp4 video demonstrating autonomous driving
 
 #### 2. Submission includes functional code
 Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
@@ -54,25 +55,25 @@ The model.py file contains the code for training and saving the convolution neur
 
 #### 1. An appropriate model architecture has been employed
 
-Before implementing CNN for my model I have pre-processed data by cropping and normalizing images. As the upper part contains trees and hills which adds no value to training the car, 50px on top is cropped and 20px on bottom to remove hood of the car is cropped. This makes the input to convolutional layer 90x320x3.
+Before implementing CNN for my model I have pre-processed data by cropping and normalizing images. As the upper part of image contains trees and hills which won't add any  value in training the car, 50px on top is cropped and 20px on bottom to remove hood of the car is cropped. This makes the input shape to convolutional layer 90x320x3.
 
-I have also normalized the data so that the value of a pixel will be in between -0.5 to +0.5.
+I have also normalized the data so that the value of a pixel will be in between -0.5 to +0.5 which will give zero mean data.
 
 My model consists of a convolution neural network with following layers:
 
-| Layer         										 |
-|:------------------------------------------------------:|
-| Input 90x320x3 - 3 channel image  					 |
-| Convolution 5x5, 2x2 stride, Depth 24, RELU activation | 
-| Convolution 5x5, 2x2 stride, Depth 36, RELU activation |
-| Convolution 5x5, 2x2 stride, Depth 48, RELU activation |
-| Convolution 3x3, 2x2 stride, Depth 64, RELU activation |
-| Convolution 3x3, 2x2 stride, Depth 64, RELU activation |
-| Flatter												 |
-| Fully connected 	Output = 100			         	 |
-| Fully connected	Output = 50	        				 |
-| Fully connected	Output = 1	        				 |
-
+| Layer         											|
+|:---------------------------------------------------------:|
+| Input 90x320x3 - 3 channel image  					 	|
+| Convolution 5x5, 2x2 stride, Depth 24, RELU activation 	| 
+| Convolution 5x5, 2x2 stride, Depth 36, RELU activation 	|
+| Convolution 5x5, 2x2 stride, Depth 48, RELU activation 	|
+| Convolution 3x3, 2x2 stride, Depth 64, RELU activation 	|
+| Convolution 3x3, 2x2 stride, Depth 64, RELU activation 	|
+| Flatter												 	|
+| Fully connected 	Output = 100			         	 	|
+| Fully connected	Output = 50	        				 	|
+| Fully connected	Output = 1	        				 	|
+				Table 1: Layers in CNN
 Stride in Tensorflow = subsample in keras
 
 #### 2. Attempts to reduce overfitting in the model
@@ -105,52 +106,51 @@ For details about how I created the training data, see the next section.
 
 The overall strategy for deriving a model architecture was to train the car to run smoothly in autonomous mode.
 
-My first step was to use a convolution neural network model. I used nvidia model of deep learning because it is very powerful and it contains 9 layers as shown in table 1.
+My first step was to use a convolution neural network model. I used nvidia model of deep learning because it is very powerful and it contains 9 layers as shown in table 1. The reason nvidia's model could give us the desired output is that it was originally designed to provide end to end learning of self-driving car which is exactly what our goal is.
 
-I used 2 Epochs initially to see how well it works. But in second Epochs my validation loss got increased instead of reducing. Then, I kept only 1 Epoch and it worked well.
+I used 2 Epochs initially to see how well it works. But in second Epochs my validation loss got increased instead of reducing. Then, I reduced it to 1 Epoch and it worked well.
+(I believe because of using 1 epoch my graph didn't plot in my jupyter notebook).
 
-In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. I found that my first model had a low mean squared error on the training set but a high mean squared error on the validation set. This implied that the model was overfitting.
+In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set.
+As I am adding flipped image and left & right camera images to training data, the size of training data becomes number of csv rows * 6 which is 38568 in total.
 
-To combat the overfitting, I modified the model so that ...
+The final step was to run the simulator to see how well the car was driving around track one. After training model, I saved the model in model.h5 file.
 
-Then I ... 
-
-The final step was to run the simulator to see how well the car was driving around track one. There were a few spots where the vehicle fell off the track... to improve the driving behavior in these cases, I ....
-
-At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
+At the end of the process, when I start the simulator in autonomous mode using my trained model, the vehicle is able to drive autonomously around the track without leaving the road. It was really great to visualize car driving itself so gracefully. 
 
 #### 2. Final Model Architecture
 
-The final model architecture (model.py lines 18-24) consisted of a convolution neural network with the following layers and layer sizes ...
+The final model architecture consisted of a convolution neural network same as explained in table 1.
 
 Here is a visualization of the architecture (note: visualizing the architecture is optional according to the project rubric)
 
 ![alt text][image1]
 
+Using the exact NVIDIA model, I was getting exception of dimension. I couldn't understand the root cause of such error. Then from one of the classmate I got the work around of removing the last layer in CNN and it worked well. I will try to find the cause behind the error once I will be on proper submission track.
+
 #### 3. Creation of the Training Set & Training Process
 
-To capture good driving behavior, I first recorded two laps on track one using center lane driving. Here is an example image of center lane driving:
+I started creating training data in simulator with keyboard controls. But it was quite difficult to drive the car using keyboard and I wasn't having joystick available to use for it. After trying for sometime, I decided to use training data given by Udacity as bad training data would never give me desired output even with good CNN model design.
+
+As I mentioned earlier, I used images coming from three cameras as a training and added some correction angle to left/right camera images. That will train the car to steer to respective angle when car is drifting to left or right. 
+Following are the images captured from left, centre and right camera respectively.
 
 ![alt text][image2]
-
-I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to .... These images show what a recovery looks like starting from ... :
-
 ![alt text][image3]
 ![alt text][image4]
+
+To augment the data sat, I also flipped images and angles thinking that this would prevent car from going to left side of the road. Since our simulator laps are designed in a way that we need to steer to left side in all the curves, it will not learn to steer to right side at all. For example, here is an image that has then been flipped:
+
 ![alt text][image5]
-
-Then I repeated this process on track two in order to get more data points.
-
-To augment the data sat, I also flipped images and angles thinking that this would ... For example, here is an image that has then been flipped:
-
 ![alt text][image6]
+
+The other way to help the situation of drifting left side of road is, to drive the car in opposite direction so it will also learn to steer to right angle as well.
+
+After processing training data I had 38568 images to train the model on.
+
+I finally randomly shuffled the data set and put 20% of the data into a validation set. 
+
+I used this training data for training the model. The validation set helped determine if the model was over or under fitting. I used an adam optimizer so that manually training the learning rate wasn't necessary. I used 1 epoch to train the model at last as using two epochs validation loss didn't reduced. Although my car was driving great just like it is driving with single epoch in even with two epochs scenario also.
+
+Here is my training and validation logs from python notebook:
 ![alt text][image7]
-
-Etc ....
-
-After the collection process, I had X number of data points. I then preprocessed this data by ...
-
-
-I finally randomly shuffled the data set and put Y% of the data into a validation set. 
-
-I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was Z as evidenced by ... I used an adam optimizer so that manually training the learning rate wasn't necessary.
